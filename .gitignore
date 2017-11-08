@@ -1,0 +1,9 @@
+*.zip
+*.o
+*.ppm
+*.bkp
+*.layout
+bin/
+doc/
+html/
+obj/
