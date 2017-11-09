@@ -21,6 +21,8 @@
     <File Name="rangen.h"/>
     <File Name="dielectric.h"/>
     <File Name="moving_sphere.h"/>
+    <File Name="aabb.h"/>
+    <File Name="bvh_node.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
