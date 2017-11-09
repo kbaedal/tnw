@@ -20,6 +20,7 @@
     <File Name="metal.h"/>
     <File Name="rangen.h"/>
     <File Name="dielectric.h"/>
+    <File Name="moving_sphere.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

@@ -10,6 +10,7 @@ const double kPI = 3.141592653589793;
 #include "camera.h"
 
 #include "sphere.h"
+#include "moving_sphere.h"
 #include "hitablelist.h"
 
 #include "material.h"
@@ -55,7 +56,8 @@ hitable *random_scene()
             vec3 center(a+0.9*dis(gen), 0.2, b+0.9*dis(gen));
             if((center-vec3(4.0, 0.2, 0.0)).length() > 0.9) {
                 if( choose_mat < 0.8 ) { // diffuse
-                    list[i++] = new sphere(center, 0.2, new lambertian(vec3(dis(gen)*dis(gen), dis(gen)*dis(gen), dis(gen)*dis(gen))));
+                    //list[i++] = new sphere(center, 0.2, new lambertian(vec3(dis(gen)*dis(gen), dis(gen)*dis(gen), dis(gen)*dis(gen))));
+                    list[i++] = new moving_sphere(center, center + vec3(0.0, 0.5*dis(gen), 0.0), 0.0, 1.0, 0.2, new lambertian(vec3(dis(gen)*dis(gen), dis(gen)*dis(gen), dis(gen)*dis(gen))));
                 }
                 else if( choose_mat < 0.95 ) { // metal
                     list[i++] = new sphere(center, 0.2, new metal(vec3(0.5 * (1 + dis(gen)), 0.5 * (1 + dis(gen)), 0.5 * (1 + dis(gen))), 0.5 * dis(gen)));
@@ -89,8 +91,8 @@ hitable *standard_scene()
 
 int main()
 {
-    int nx = 6*200;
-    int ny = 6*100;
+    int nx = 200;
+    int ny = 100;
     int ns = 100;
         
     std::ofstream myfile("test.ppm");
@@ -114,7 +116,7 @@ int main()
     float dist_to_focus = 10.0;
     float aperture = 0.1;
     
-    camera cam(lookfrom, lookat, camup, 20, float(nx)/float(ny), aperture, dist_to_focus);
+    camera cam(lookfrom, lookat, camup, 20, float(nx)/float(ny), aperture, dist_to_focus, 0.0, 1.0);
 
     for(int j = ny - 1; j >= 0; --j) {
         for(int i = 0; i < nx; ++i) {
