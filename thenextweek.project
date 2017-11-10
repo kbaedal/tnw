@@ -23,6 +23,8 @@
     <File Name="moving_sphere.h"/>
     <File Name="aabb.h"/>
     <File Name="bvh_node.h"/>
+    <File Name="texture.h"/>
+    <File Name="perlin.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
