@@ -115,7 +115,7 @@ hitable *two_spheres()
 
 hitable *two_perlin_spheres()
 {
-    texture *per_text = new noise_texture();
+    texture *per_text = new noise_texture(4.0);
     
     hitable **list = new hitable*[2];
     
