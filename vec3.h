@@ -197,5 +197,10 @@ bool refract(const vec3 &v, const vec3 &n, float ni_over_nt, vec3 &refracted)
         return false;
 }
 
+inline std::ostream& operator<<(std::ostream &os, const vec3 &t) {
+    os << t.e[0] << " " << t.e[1] << " " << t.e[2];
+    return os;
+}
+
 #endif // __VEC3_H__
 

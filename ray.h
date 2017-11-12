@@ -18,4 +18,9 @@ class ray {
         float _time;
 };
 
+inline std::ostream& operator<<(std::ostream &os, const ray &r) {
+    os << "o: " << r.A << " " << "d: " << r.B;;
+    return os;
+}
+
 #endif // __RAY_H__

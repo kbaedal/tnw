@@ -5,6 +5,13 @@
 #include "material.h"
 #include "aabb.h"
 
+void get_sphere_uv(const vec3 &p, float &u, float &v) {
+    float phi = std::atan2(p.z(), p.x());
+    float theta = std::asin(p.y());
+    u = 1 - (phi + kPI) / (2 * kPI);
+    v = (theta + (kPI/2)) / kPI;
+}
+
 class sphere : public hitable
 {
     public:
@@ -36,6 +43,7 @@ bool sphere::hit(const ray &r, float tmin, float tmax, hit_record &rec) const
         if(temp < tmax && temp > tmin) {
             rec.t = temp;
             rec.p = r.point_at_parameter(rec.t);
+            get_sphere_uv((rec.p-center)/radius, rec.u, rec.v);
             rec.normal = (rec.p - center) / radius;
             rec.mat_ptr = this->mat_ptr;
             
@@ -47,6 +55,7 @@ bool sphere::hit(const ray &r, float tmin, float tmax, hit_record &rec) const
         if(temp < tmax && temp > tmin) {
             rec.t = temp;
             rec.p = r.point_at_parameter(rec.t);
+            get_sphere_uv((rec.p-center)/radius, rec.u, rec.v);
             rec.normal = (rec.p - center) / radius;
             rec.mat_ptr = this->mat_ptr;
             

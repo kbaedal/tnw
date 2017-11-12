@@ -14,10 +14,14 @@ const double kPI = 3.141592653589793;
 #include "hitablelist.h"
 
 #include "material.h"
+#include "texture.h"
 #include "lambertian.h"
 #include "metal.h"
 #include "dielectric.h"
-#include "texture.h"
+#include "diffuse_light.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #include "float.h"
 
@@ -27,19 +31,24 @@ vec3 color(const ray &r, hitable *world, int depth)
     if(world->hit(r, 0.001, FLT_MAX, rec)) {
         ray scattered;
         vec3 attenuation;
+        vec3 emmited = rec.mat_ptr->emitted(rec.u, rec.v rec.p);
         
-        if ( depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-            return attenuation * color(scattered, world, depth+1);
+        if ( depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered) ) {
+            return emmited + attenuation * color(scattered, world, depth+1);
+            
         }
         else {
-            return vec3(0.0, 0.0, 0.0);
+            return emmited;
         }
         
     }
     else {
+        /*
         vec3 unit_direction = unit_vector(r.direction());
         float t = 0.5 * (unit_direction.y() + 1.0);
         return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
+        */
+        return vec3(0.0, 0.0, 0.0);          
     }
 }
 
@@ -125,6 +134,14 @@ hitable *two_perlin_spheres()
     return new hitable_list(list, 2);
 }
 
+hitable *earth_sphere() {    
+    int nx, ny, nn;
+    //unsigned char *tex_data = stbi_load("checker.png", &nx, &ny, &nn, 0);
+    unsigned char *tex_data = stbi_load("earthmap.jpg", &nx, &ny, &nn, 0);
+    material *mat =  new lambertian(new image_texture(tex_data, nx, ny));
+    return new sphere(vec3(0.0, 0.0, 0.0), 2.0, mat);
+}
+
 int main()
 {
     int nx = 2*200;
@@ -138,7 +155,8 @@ int main()
     //hitable *world = standard_scene();
     //hitable *world = random_scene();
     //hitable *world = two_spheres();
-    hitable *world = two_perlin_spheres();
+    //hitable *world = two_perlin_spheres();
+    hitable *world = earth_sphere();
     
     /*
     vec3 lookfrom(3.0, 3.0, 2.0);
@@ -155,9 +173,10 @@ int main()
     float aperture = 0.0;
     
     camera cam(lookfrom, lookat, camup, 20, float(nx)/float(ny), aperture, dist_to_focus, 0.0, 1.0);
-
-    for(int j = ny - 1; j >= 0; --j) {
+    
+    for(int j = ny - 1, k = 1; j >= 0; --j, ++k) {
         for(int i = 0; i < nx; ++i) {
+            std::cout << "\rRenderizando linea " << k << " de " << ny << " ...";
             vec3 col(0.0, 0.0, 0.0);
             
             for(int s = 0; s < ns; ++s) {
@@ -165,8 +184,6 @@ int main()
                 float v = float(j + dis(gen)) / float(ny);
                 
                 ray r = cam.get_ray(u, v);
-                
-                //vec3 p = r.point_at_parameter(2.0);
                 col += color(r, world, 0);
             }
             
@@ -179,7 +196,7 @@ int main()
 
             myfile << ir << " " << ig << " " << ib << "\n";
         }
-    }
+    }    
 
     myfile.close();
 }

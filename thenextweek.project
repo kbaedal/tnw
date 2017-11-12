@@ -25,6 +25,8 @@
     <File Name="bvh_node.h"/>
     <File Name="texture.h"/>
     <File Name="perlin.h"/>
+    <File Name="stb_image.h"/>
+    <File Name="diffuse_light.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
