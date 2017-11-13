@@ -13,6 +13,7 @@ const double kPI = 3.141592653589793;
 #include "moving_sphere.h"
 #include "hitablelist.h"
 #include "rect.h"
+#include "box.h"
 
 #include "material.h"
 #include "texture.h"
