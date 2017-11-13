@@ -173,6 +173,8 @@ hitable *cornell_box()
     list[i++] = new flip_normals(new rect_xz(0, 555, 0, 555, 555, white));
     list[i++] = new rect_xz(0, 555, 0, 555, 0, white);
     list[i++] = new flip_normals(new rect_xy(0, 555, 0, 555, 555, white));
+    list[i++] = new box(vec3(130, 0, 65), vec3(295, 165, 230), white);
+    list[i++] = new box(vec3(265, 0, 295), vec3(430, 330, 460), white);
     
     return new hitable_list(list, i);
 }
