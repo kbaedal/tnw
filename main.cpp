@@ -12,6 +12,7 @@ const double kPI = 3.141592653589793;
 #include "sphere.h"
 #include "moving_sphere.h"
 #include "hitablelist.h"
+#include "rect.h"
 
 #include "material.h"
 #include "texture.h"
@@ -31,7 +32,7 @@ vec3 color(const ray &r, hitable *world, int depth)
     if(world->hit(r, 0.001, FLT_MAX, rec)) {
         ray scattered;
         vec3 attenuation;
-        vec3 emmited = rec.mat_ptr->emitted(rec.u, rec.v rec.p);
+        vec3 emmited = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
         
         if ( depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered) ) {
             return emmited + attenuation * color(scattered, world, depth+1);
@@ -134,12 +135,45 @@ hitable *two_perlin_spheres()
     return new hitable_list(list, 2);
 }
 
-hitable *earth_sphere() {    
+hitable *earth_sphere()
+{    
     int nx, ny, nn;
     //unsigned char *tex_data = stbi_load("checker.png", &nx, &ny, &nn, 0);
     unsigned char *tex_data = stbi_load("earthmap.jpg", &nx, &ny, &nn, 0);
     material *mat =  new lambertian(new image_texture(tex_data, nx, ny));
     return new sphere(vec3(0.0, 0.0, 0.0), 2.0, mat);
+}
+
+hitable *simple_light()
+{
+    texture *per_text = new noise_texture(4.0);
+    hitable **list = new hitable*[4];
+    
+    list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(per_text));
+    list[1] = new sphere(vec3(0, 2, 0), 2, new lambertian(per_text));
+    list[2] = new sphere(vec3(0, 7, 0), 2, new diffuse_light(new constant_texture(vec3(4.0, 4.0, 4.0))));
+    list[3] = new rect_xy(3.0, 5.0, 1.0, 3.0, -2.0, new diffuse_light(new constant_texture(vec3(4.0, 4.0, 4.0))));
+    
+    return new hitable_list(list, 4);
+}
+
+hitable *cornell_box()
+{
+    hitable **list = new hitable*[6];
+    int i = 0;
+    material *red = new lambertian(new constant_texture(vec3(0.65, 0.05, 0.05)));
+    material *white = new lambertian(new constant_texture(vec3(0.73, 0.73, 0.73)));
+    material *green = new lambertian(new constant_texture(vec3(0.12, 0.45, 0.15)));
+    material *light = new diffuse_light(new constant_texture(vec3(15, 15, 15)));
+    
+    list[i++] = new flip_normals(new rect_yz(0, 555, 0, 555, 555, green));
+    list[i++] = new rect_yz(0, 555, 0, 555, 0, red);
+    list[i++] = new rect_xz(213, 343, 227, 332, 554, light);
+    list[i++] = new flip_normals(new rect_xz(0, 555, 0, 555, 555, white));
+    list[i++] = new rect_xz(0, 555, 0, 555, 0, white);
+    list[i++] = new flip_normals(new rect_xy(0, 555, 0, 555, 555, white));
+    
+    return new hitable_list(list, i);
 }
 
 int main()
@@ -156,7 +190,9 @@ int main()
     //hitable *world = random_scene();
     //hitable *world = two_spheres();
     //hitable *world = two_perlin_spheres();
-    hitable *world = earth_sphere();
+    //hitable *world = earth_sphere();
+    //hitable *world = simple_light();
+    hitable *world = cornell_box();
     
     /*
     vec3 lookfrom(3.0, 3.0, 2.0);
@@ -166,13 +202,22 @@ int main()
     float aperture = 2.0;
     */
     
+    /*
     vec3 lookfrom(13.0, 2.0, 3.0);
-    vec3 lookat(0.0, 0.0, 0.0);
+    vec3 lookat(0.0, 2.0, 0.0);
     vec3 camup(0.0, 1.0, 0.0);
     float dist_to_focus = 10.0;
     float aperture = 0.0;
+    */
     
-    camera cam(lookfrom, lookat, camup, 20, float(nx)/float(ny), aperture, dist_to_focus, 0.0, 1.0);
+    vec3 lookfrom(278, 278, -800);
+    vec3 lookat(278.0, 278.0, 0.0);
+    vec3 camup(0.0, 1.0, 0.0);
+    float dist_to_focus = 10.0;
+    float aperture = 0.0;
+    float vfov = 40.0;
+    
+    camera cam(lookfrom, lookat, camup, vfov, float(nx)/float(ny), aperture, dist_to_focus, 0.0, 1.0);
     
     for(int j = ny - 1, k = 1; j >= 0; --j, ++k) {
         for(int i = 0; i < nx; ++i) {
