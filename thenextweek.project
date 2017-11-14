@@ -29,6 +29,7 @@
     <File Name="diffuse_light.h"/>
     <File Name="rect.h"/>
     <File Name="box.h"/>
+    <File Name="instance.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

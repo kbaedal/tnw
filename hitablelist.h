@@ -2,6 +2,7 @@
 #define __HITABLELIST_H__
 
 #include "hitable.h"
+#include "aabb.h"
 
 class hitable_list : public hitable
 {
