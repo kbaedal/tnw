@@ -165,11 +165,13 @@ hitable *cornell_box()
     material *red = new lambertian(new constant_texture(vec3(0.65, 0.05, 0.05)));
     material *white = new lambertian(new constant_texture(vec3(0.73, 0.73, 0.73)));
     material *green = new lambertian(new constant_texture(vec3(0.12, 0.45, 0.15)));
-    material *light = new diffuse_light(new constant_texture(vec3(15, 15, 15)));
+    //material *light = new diffuse_light(new constant_texture(vec3(15, 15, 15)));
+    material *light2 = new diffuse_light(new constant_texture(vec3(7, 7, 7)));
     
     list[i++] = new flip_normals(new rect_yz(0, 555, 0, 555, 555, green));
     list[i++] = new rect_yz(0, 555, 0, 555, 0, red);
-    list[i++] = new rect_xz(213, 343, 227, 332, 554, light);
+    //list[i++] = new rect_xz(213, 343, 227, 332, 554, light);
+    list[i++] = new rect_xz(113, 443, 127, 432, 554, light2);
     list[i++] = new flip_normals(new rect_xz(0, 555, 0, 555, 555, white));
     list[i++] = new rect_xz(0, 555, 0, 555, 0, white);
     list[i++] = new flip_normals(new rect_xy(0, 555, 0, 555, 555, white));
@@ -182,8 +184,8 @@ hitable *cornell_box()
 int main()
 {
     int nx = 2*200;
-    int ny = 2*100;
-    int ns = 100;
+    int ny = 2*200;
+    int ns = 1000;
         
     std::ofstream myfile("test.ppm");
 
@@ -238,9 +240,9 @@ int main()
             col /= float(ns);
             col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
             
-            int ir = int(255.99 * col.r());
-            int ig = int(255.99 * col.g());
-            int ib = int(255.99 * col.b());
+            int ir = int(255.99 * (col.r() > 1.0 ? 1.0 : col.r()));
+            int ig = int(255.99 * (col.g() > 1.0 ? 1.0 : col.g()));
+            int ib = int(255.99 * (col.b() > 1.0 ? 1.0 : col.b()));
 
             myfile << ir << " " << ig << " " << ib << "\n";
         }
