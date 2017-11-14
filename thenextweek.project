@@ -30,6 +30,8 @@
     <File Name="rect.h"/>
     <File Name="box.h"/>
     <File Name="instance.h"/>
+    <File Name="constant_medium.h"/>
+    <File Name="isotropic.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

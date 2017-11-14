@@ -17,6 +17,7 @@ const double kPI = 3.141592653589793;
 #include "rect.h"
 #include "box.h"
 #include "instance.h"
+#include "constant_medium.h"
 
 #include "material.h"
 #include "texture.h"
@@ -27,8 +28,6 @@ const double kPI = 3.141592653589793;
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
-
 
 vec3 color(const ray &r, hitable *world, int depth)
 {
@@ -45,7 +44,6 @@ vec3 color(const ray &r, hitable *world, int depth)
         else {
             return emmited;
         }
-        
     }
     else {
         /*
@@ -163,7 +161,7 @@ hitable *simple_light()
 
 hitable *cornell_box()
 {
-    hitable **list = new hitable*[6];
+    hitable **list = new hitable*[8];
     int i = 0;
     material *red = new lambertian(new constant_texture(vec3(0.65, 0.05, 0.05)));
     material *white = new lambertian(new constant_texture(vec3(0.73, 0.73, 0.73)));
@@ -186,6 +184,97 @@ hitable *cornell_box()
     return new hitable_list(list, i);
 }
 
+hitable *cornell_smoke()
+{
+    hitable **list = new hitable*[8];
+    int i = 0;
+    material *red = new lambertian(new constant_texture(vec3(0.65, 0.05, 0.05)));
+    material *white = new lambertian(new constant_texture(vec3(0.73, 0.73, 0.73)));
+    material *green = new lambertian(new constant_texture(vec3(0.12, 0.45, 0.15)));
+    material *light = new diffuse_light(new constant_texture(vec3(7, 7, 7)));
+    
+    list[i++] = new flip_normals(new rect_yz(0, 555, 0, 555, 555, green));
+    list[i++] = new rect_yz(0, 555, 0, 555, 0, red);
+    list[i++] = new rect_xz(113, 443, 127, 432, 554, light);
+    list[i++] = new flip_normals(new rect_xz(0, 555, 0, 555, 555, white));
+    list[i++] = new rect_xz(0, 555, 0, 555, 0, white);
+    list[i++] = new flip_normals(new rect_xy(0, 555, 0, 555, 555, white));
+    hitable *b1 = new translate(new rotate_y(new box(vec3(0, 0, 0), vec3(165, 165, 165), white), -18), vec3(130, 0, 65));
+    hitable *b2 = new translate(new rotate_y(new box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15), vec3(265, 0, 295));
+    list[i++] = new constant_medium(b1, 0.01, new constant_texture(vec3(1.0, 1.0, 1.0)));
+    list[i++] = new constant_medium(b2, 0.01, new constant_texture(vec3(0.0, 0.0, 0.0)));
+    
+    return new hitable_list(list, i);
+}
+
+hitable *cornell_balls()
+{
+    hitable **list = new hitable*[9];
+    
+    int i = 0;
+    
+    material *red = new lambertian( new constant_texture(vec3(0.65, 0.05, 0.05)) );
+    material *white = new lambertian( new constant_texture(vec3(0.73, 0.73, 0.73)) );
+    material *green = new lambertian( new constant_texture(vec3(0.12, 0.45, 0.15)) );
+    material *light = new diffuse_light( new constant_texture(vec3(5, 5, 5)) );
+    
+    list[i++] = new flip_normals(new rect_yz(0, 555, 0, 555, 555, green));
+    list[i++] = new rect_yz(0, 555, 0, 555, 0, red);
+    list[i++] = new rect_xz(113, 443, 127, 432, 554, light);
+    list[i++] = new flip_normals(new rect_xz(0, 555, 0, 555, 555, white));
+    list[i++] = new rect_xz(0, 555, 0, 555, 0, white);
+    list[i++] = new flip_normals(new rect_xy(0, 555, 0, 555, 555, white));
+    hitable *boundary = new sphere(vec3(160, 100, 145), 100, new dielectric(1.5));
+    list[i++] = boundary;
+    list[i++] = new constant_medium(boundary, 0.1, new constant_texture(vec3(1.0, 1.0, 1.0)));
+    list[i++] = new translate(new rotate_y(new box(vec3(0, 0, 0), vec3(165, 330, 165), white),  15), vec3(265,0,295));
+    
+    return new hitable_list(list,i);
+}
+
+hitable *cornell_final()
+{
+    hitable **list = new hitable*[30];
+    hitable **boxlist = new hitable*[10000];
+    texture *pertext = new noise_texture(0.1);
+    int nx, ny, nn;
+    unsigned char *tex_data = stbi_load("earthmap.jpg", &nx, &ny, &nn, 0);
+    material *mat =  new lambertian(new image_texture(tex_data, nx, ny));
+
+    int i = 0;
+    material *red = new lambertian( new constant_texture(vec3(0.65, 0.05, 0.05)) );
+    material *white = new lambertian( new constant_texture(vec3(0.73, 0.73, 0.73)) );
+    material *green = new lambertian( new constant_texture(vec3(0.12, 0.45, 0.15)) );
+    material *light = new diffuse_light( new constant_texture(vec3(7, 7, 7)) );
+
+    //list[i++] = new sphere(vec3(260, 50, 145), 50,mat);
+    list[i++] = new flip_normals(new rect_yz(0, 555, 0, 555, 555, green));
+    list[i++] = new rect_yz(0, 555, 0, 555, 0, red);
+    list[i++] = new rect_xz(123, 423, 147, 412, 554, light);
+    list[i++] = new flip_normals(new rect_xz(0, 555, 0, 555, 555, white));
+    list[i++] = new rect_xz(0, 555, 0, 555, 0, white);
+    list[i++] = new flip_normals(new rect_xy(0, 555, 0, 555, 555, white));
+
+    /*
+    hitable *boundary = new sphere(vec3(160, 50, 345), 50, new dielectric(1.5));
+    list[i++] = boundary;
+    list[i++] = new constant_medium(boundary, 0.2, new constant_texture(vec3(0.2, 0.4, 0.9)));
+    list[i++] = new sphere(vec3(460, 50, 105), 50, new dielectric(1.5));
+    list[i++] = new sphere(vec3(120, 50, 205), 50, new lambertian(pertext));
+    int ns = 10000;
+    for (int j = 0; j < ns; j++) {
+        boxlist[j] = new sphere(vec3(165*drand48(), 330*drand48(), 165*drand48()), 10, white);
+    }
+    list[i++] =   new translate(new rotate_y(new bvh_node(boxlist,ns, 0.0, 1.0), 15), vec3(265,0,295));
+    */
+
+    hitable *boundary2 = new translate(new rotate_y(new box(vec3(0, 0, 0), vec3(165, 165, 165), new dielectric(1.5)), -18), vec3(130,0,65));
+    list[i++] = boundary2;
+    list[i++] = new constant_medium(boundary2, 0.2, new constant_texture(vec3(0.9, 0.9, 0.9)));
+
+    return new hitable_list(list,i);
+}
+
 int main()
 {
     int nx = 2*200;
@@ -202,7 +291,9 @@ int main()
     //hitable *world = two_perlin_spheres();
     //hitable *world = earth_sphere();
     //hitable *world = simple_light();
-    hitable *world = cornell_box();
+    //hitable *world = cornell_box();
+    //hitable *world = cornell_smoke();
+    hitable *world = cornell_balls();
     
     /*
     vec3 lookfrom(3.0, 3.0, 2.0);
@@ -220,12 +311,24 @@ int main()
     float aperture = 0.0;
     */
     
+    // Cornell box cam
     vec3 lookfrom(278, 278, -800);
     vec3 lookat(278.0, 278.0, 0.0);
     vec3 camup(0.0, 1.0, 0.0);
     float dist_to_focus = 10.0;
     float aperture = 0.0;
     float vfov = 40.0;
+    
+    
+    // Final cam
+    /*
+    vec3 lookfrom(478, 278, -600);
+    vec3 lookat(278.0, 278.0, 0.0);
+    vec3 camup(0.0, 1.0, 0.0);
+    float dist_to_focus = 10.0;
+    float aperture = 0.0;
+    float vfov = 40.0;
+     */
     
     camera cam(lookfrom, lookat, camup, vfov, float(nx)/float(ny), aperture, dist_to_focus, 0.0, 1.0);
     
