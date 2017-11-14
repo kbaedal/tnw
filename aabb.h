@@ -15,7 +15,7 @@ class aabb {
         vec3 min() const { return _min; }
         vec3 max() const { return _max; }
         
-        bool hit(const ray &r, float tmin, float tmax)
+        bool hit(const ray &r, float tmin, float tmax) const
         {
             for(int a = 0; a < 3; ++a) {
                 float invD = 1.0 / r.direction()[a];
