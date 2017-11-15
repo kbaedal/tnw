@@ -304,7 +304,7 @@ int main()
 {
     int nx = 2*200;
     int ny = 2*200;
-    int ns = 1000;
+    int ns = 10;
         
     std::ofstream myfile("test.ppm");
 
